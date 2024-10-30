@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drink Recommendation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container to Display Drink Recommendations -->
+    <div id="drink-recommendations"></div>
+
+    <div id="steps-container">
+        <div id="step1" class="step">
+            <h2>Select Your Spirit Base</h2>
+            <form id="spiritForm">
+                <label><input type="checkbox" name="spirit" value="vodka"> Vodka</label>
+                <label><input type="checkbox" name="spirit" value="gin"> Gin</label>
+                <label><input type="checkbox" name="spirit" value="rum"> Rum</label>
+                <label><input type="checkbox" name="spirit" value="tequila"> Tequila</label>
+                <label><input type="checkbox" name="spirit" value="whiskey"> Whiskey</label>
+                <label><input type="checkbox" name="spirit" value="brandy"> Brandy</label>
+                <label><input type="checkbox" name="spirit" value="mezcal"> Mezcal</label>
+                <button id = "next-step2" type="button" onclick="goToStep(2)">Next</button>
+            </form>
+        </div>
+
+        <div id="step2" class="step">
+            <h2>Choose Your Flavor Strength</h2>
+            <form id="strengthForm">
+                <label><input type="radio" name="strength" value="alcohol-forward"> Alcohol-Forward</label>
+                <label><input type="radio" name="strength" value="juice-forward"> Juice-Forward</label>
+                <label><input type="radio" name="strength" value="middle"> Middle</label>
+                <label><input type="radio" name="strength" value="no-preference"> No Preference</label>
+                <button id = "next-step3" type="button" onclick="goToStep(3)">Next</button>
+            </form>
+        </div>
+
+        <div id="step3" class="step">
+            <h2>Select Flavor Profile</h2>
+            <form id="flavorForm">
+                <label><input type="checkbox" name="flavor" value="smoky"> Smoky</label>
+                <label><input type="checkbox" name="flavor" value="floral"> Floral</label>
+                <label><input type="checkbox" name="flavor" value="fresh"> Fresh</label>
+                <label><input type="checkbox" name="flavor" value="bright"> Bright</label>
+                <label><input type="checkbox" name="flavor" value="fruity"> Fruity</label>
+                <label><input type="checkbox" name="flavor" value="chocolatey"> Chocolatey</label>
+                <label><input type="checkbox" name="flavor" value="herbal"> Herbal</label>
+                <label><input type="checkbox" name="flavor" value="spicy"> Spicy</label>
+                <label><input type="checkbox" name="flavor" value="citrusy"> Citrusy</label>
+                <label><input type="checkbox" name="flavor" value="sweet"> Sweet</label>
+                <label><input type="checkbox" name="flavor" value="creamy"> Creamy</label>
+                <button id = "next-step4" type="button" onclick="goToStep(4)">Next</button>
+            </form>
+        </div>
+
+        <div id="step4" class="step">
+            <h2>Select Liqueurs You Have</h2>
+            <form id="liqueurForm">
+                <div id="liqueur-options"></div>
+            </form>
+            <button id = "next-step5" type="button" onclick="goToStep(5)">Next</button>
+        </div>
+
+        <!-- Step 5: Review and Recalculate Button -->
+        <div id="step5" class="step">
+            <h2>Review Your Selections</h2>
+            <div id="review-selections">
+                <!-- User selections will be shown here -->
+            </div>
+            <button type="button" onclick="goToStep(5)">Recalculate</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

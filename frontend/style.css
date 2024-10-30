@@ -1,0 +1,95 @@
+/* Overall page styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Container for steps */
+#steps-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Step styling */
+.step {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Show the first step by default */
+#step1 {
+    display: flex;
+}
+
+/* Button styling */
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+/* Recommended Drinks section styling */
+#drink-recommendations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+}
+
+/* Drink box styling */
+.drink-box {
+    width: 200px;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Image container within drink box */
+.image-container {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Drink image styling */
+.drink-image {
+    max-height: 100%;
+    width: auto;
+    max-width: 100%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #steps-container {
+        width: 100%;
+    }
+    .drink-box {
+        width: 90vw;
+    }
+}
