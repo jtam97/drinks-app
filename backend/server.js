@@ -21,8 +21,8 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Serve index.html for the root route
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+app.get('/*', (req, res) => {
+	res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
 });
 
 
