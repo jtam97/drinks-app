@@ -1,0 +1,15 @@
+# .gcloudignore
+.gcloudignore
+.git/
+.gitignore
+
+# Node modules
+node_modules/
+
+# Environment variables and sensitive files
+.env
+
+# Local builds or generated files
+dist/
+build/
+logs/

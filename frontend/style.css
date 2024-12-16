@@ -1,0 +1,323 @@
+/* Base Styles */
+html {
+    font-size: 12px;
+}
+
+body {
+    background-color: #2c1810;
+    background-image: url('assets/background.avif');
+    color: #d4c3b5;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Typography */
+h1, h2, h3, .drink-name {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* Header Styles */
+header {
+    background: linear-gradient(to bottom, #4a2511, #2c1810);
+    padding: 12px;
+    text-align: center;
+    border-bottom: 3px solid #8b4513;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ffd700, #ffa500, #ff8c00);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+                 -2px -2px 4px rgba(255, 215, 0, 0.1);
+    margin: 0;
+    letter-spacing: 2px;
+    position: relative;
+    display: inline-block;
+}
+
+header h1::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    right: -20px;
+    top: -10px;
+    bottom: -10px;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    z-index: -1;
+}
+
+header p {
+    color: #d4c3b5;
+    font-size: 1.2rem;
+    margin-top: 15px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.9;
+}
+
+/* Layout */
+main {
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Steps Container */
+#steps-container {
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 120px);
+    width: 160px;
+    overflow: visible;
+}
+
+/* Step Styling */
+.step {
+    display: none;
+    background: #f5e6d3;
+    color: #2c1810;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+    border: 2px solid #8b4513;
+    width: 300px;
+    position: relative;
+    left: -20px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+#step1 { display: block; }
+
+.step h2 {
+    font-size: 1.75rem !important;
+    margin-bottom: 1.5rem;
+    color: #015d12;
+    line-height: 1.2;
+}
+
+/* Minimized Step State */
+.step.minimized {
+    background: #d4c3b5;
+    width: 100%;
+    padding: 8px 12px;
+    cursor: pointer;
+    border: 1px solid #8b4513;
+    margin-bottom: 5px;
+}
+
+.step.minimized h2 {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.step.minimized label,
+.step.minimized input,
+.step.minimized button,
+.step.minimized p {
+    display: none;
+}
+
+/* Form Elements */
+.options {
+    margin: 1rem 0;
+}
+
+.options label {
+    background: #fff;
+    border: 1px solid #8b4513;
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem !important;
+    display: block;
+    color: #000000;
+}
+
+.options label:hover {
+    background: #ffecd9;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: #147c22;
+    transform: scale(1.1);
+    margin-right: 15px;
+    width: 1rem;
+    height: 1rem;
+}
+
+button {
+    background: #8b4513;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+button:hover {
+    background: #6b3410;
+    transform: translateY(-2px);
+}
+
+/* Recalculate Button */
+#recalculate-btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#recalculate-btn:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Step 5 Specific */
+#step5 {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#step5.minimized {
+    display: none !important;
+}
+
+/* Error Messages */
+.error-message {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid #ff4444;
+    display: none;
+    font-size: 1rem;
+}
+
+/* Loading States */
+.loading-spinner {
+    display: none;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #8b4513;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    position: fixed;
+    top: 40%;
+    left: 46%;
+    /* transform: translate(-50%, -50%); */
+    z-index: 1000;
+}
+
+.loading-text {
+    text-align: center;
+    color: #d4c3b5;
+    font-size: 2rem;
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* Drink Recommendations */
+#drink-recommendations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 0.2fr));
+    gap: 5px;
+    align-content: start;
+    margin-left: -20px;
+    padding-right: 20px;
+}
+
+.drink-box {
+    background: #f5e6d3;
+    border: 2px solid #8b4513;
+    border-radius: 12px;
+    padding: 10px;
+    margin: 3px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 350px;
+}
+
+.drink-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.image-container {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.drink-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.drink-content {
+    padding: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4a2511;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    html { font-size: 14px; }
+
+    header h1 { font-size: 2.5rem; }
+    header p { font-size: 1rem; }
+
+    main { grid-template-columns: 1fr; }
+
+    #steps-container {
+        position: relative;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .step {
+        width: 100%;
+        left: 0;
+    }
+
+    #drink-recommendations { margin-left: 0; }
+}
+
