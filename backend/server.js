@@ -14,7 +14,16 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-	origin: ['http://127.0.0.1:5503', 'http://localhost:8000', 'https://storage.googleapis.com', 'http://www.justinztam.com', process.env.FRONTEND_REROUTE].filter(Boolean),
+	origin: [
+		'https://www.justinztam.com',
+		'https://justinztam.com',
+		'https://www.justinztam.com/drinks-app',
+		'https://justinztam.com/drinks-app',
+		'http://127.0.0.1:5503',
+		'http://localhost:8000',
+		'https://storage.googleapis.com',
+		process.env.FRONTEND_REROUTE
+	].filter(Boolean),
 	methods: ['POST', 'OPTIONS'],
 	allowedHeaders: ['Content-Type'],
 	preflightContinue: false,
