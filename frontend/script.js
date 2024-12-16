@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://drinks-app-197470789108.us-east1.run.app"
+const BACKEND_URL = "https://cocktail-ai-819618430368.us-east1.run.app"
 // const BACKEND_URL = "http://localhost:8000"
 
 let userSelections = {

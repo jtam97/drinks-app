@@ -14,11 +14,15 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-	origin: ['http://127.0.0.1:5501', 'http://localhost:8000', process.env.FRONTEND_URL],
-	methods: ['POST'],
-	allowedHeaders: ['Content-Type']
+	origin: ['http://127.0.0.1:5503', 'http://localhost:8000', 'https://storage.googleapis.com', 'http://www.justinztam.com', process.env.FRONTEND_REROUTE].filter(Boolean),
+	methods: ['POST', 'OPTIONS'],
+	allowedHeaders: ['Content-Type'],
+	preflightContinue: false,
+	optionsSuccessStatus: 204
 };
 
+// Enable pre-flight requests for all routes
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
