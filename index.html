@@ -3,100 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drink Recommendation</title>
+    <title>Cocktail AI</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
 <body>
-    <header>
-        <h1>Drink Wizard</h1>
-        <p>Your personalized drink recommendations!</p>
-    </header>
+    <div class="app-container">
+        <header>
+            <h1>Cocktail AI</h1>
+            <p>Crafting your perfect drink</p>
+        </header>
 
-    <main>
-        <!-- Steps container first -->
-        <div id="steps-container">
-            <!-- Step 1 -->
-            <div id="step1" class="step">
-                <h2>Select Your Spirit Base</h2>
-                <form id="spiritForm">
-                    <div class="options">
-                        <label><input type="checkbox" name="spirit" value="vodka"> Vodka</label>
-                        <label><input type="checkbox" name="spirit" value="gin"> Gin</label>
-                        <label><input type="checkbox" name="spirit" value="rum"> Rum</label>
-                        <label><input type="checkbox" name="spirit" value="tequila"> Tequila</label>
-                        <label><input type="checkbox" name="spirit" value="whiskey"> Whiskey</label>
-                        <label><input type="checkbox" name="spirit" value="brandy"> Brandy</label>
-                        <label><input type="checkbox" name="spirit" value="mezcal"> Mezcal</label>
-                        <label><input type="checkbox" name="spirit" value="nonalcoholic"> Non-alcoholic</label>
+        <main>
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="step-indicator active" data-step="1">1</div>
+                    <div class="step-indicator" data-step="2">2</div>
+                    <div class="step-indicator" data-step="3">3</div>
+                    <div class="step-indicator" data-step="4">4</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="steps-container">
+                <!-- Step 1: Base Spirit -->
+                <div class="step active" id="step1">
+                    <h2>Choose Your Base Spirit</h2>
+                    <div class="spirit-grid">
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="vodka">
+                            <span>Vodka</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="gin">
+                            <span>Gin</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="rum">
+                            <span>Rum</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="tequila">
+                            <span>Tequila</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="whiskey">
+                            <span>Whiskey</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="brandy">
+                            <span>Brandy</span>
+                        </label>
+                        <label class="spirit-chip">
+                            <input type="checkbox" name="spirit" value="mezcal">
+                            <span>Mezcal</span>
+                        </label>
                     </div>
-                    <div class="error-message" id="error-step1">Please select at least one option to continue.</div>
-                    <button id = "next-step2" type="button" onclick="goToStep(2)">Next</button>
-                </form>
-            </div>
+                </div>
 
-            <div id="nonalcoholic" class="step hidden">
-                <h2>Non-alcoholic? We respect sobriety!</h2>
-                <button type="button" onclick="resetToStep1()">But this is a drink recommendation app, not a juice bar. Back to the spirits!</button>
-            </div>
-
-            <!-- Step 2 -->
-            <div id="step2" class="step">
-                <h2>Choose Your Flavor Strength</h2>
-                <form id="strengthForm">
-                    <div class="options">
-                        <label><input type="radio" name="strength" value="alcohol-forward"> Alcohol-Forward</label>
-                        <label><input type="radio" name="strength" value="juice-forward"> Juice-Forward</label>
-                        <label><input type="radio" name="strength" value="middle"> Middle</label>
-                        <label><input type="radio" name="strength" value="no-preference"> No Preference</label>
+                <!-- Step 2: Flavor Profile -->
+                <div class="step" id="step2">
+                    <h2>Select Flavor Profile</h2>
+                    <div class="flavor-grid">
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="sweet">
+                            <span>Sweet</span>
+                        </label>
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="sour">
+                            <span>Sour</span>
+                        </label>
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="bitter">
+                            <span>Bitter</span>
+                        </label>
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="spicy">
+                            <span>Spicy</span>
+                        </label>
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="herbal">
+                            <span>Herbal</span>
+                        </label>
+                        <label class="flavor-chip">
+                            <input type="checkbox" name="flavor" value="fruity">
+                            <span>Fruity</span>
+                        </label>
                     </div>
-                    <div class="error-message" id="error-step2">Please select at least one option to continue.</div>
-                    <button id = "next-step3" type="button" onclick="goToStep(3)">Next</button>
-                </form>
-            </div>
+                </div>
 
-            <!-- Step 3 -->
-            <div id="step3" class="step">
-                <h2>Select Flavor Profile</h2>
-                <form id="flavorForm">
-                    <div class="options">
-                        <label><input type="checkbox" name="flavor" value="smoky"> Smoky</label>
-                        <label><input type="checkbox" name="flavor" value="floral"> Floral</label>
-                        <label><input type="checkbox" name="flavor" value="fresh"> Fresh</label>
-                        <label><input type="checkbox" name="flavor" value="bright"> Bright</label>
-                        <label><input type="checkbox" name="flavor" value="fruity"> Fruity</label>
-                        <label><input type="checkbox" name="flavor" value="chocolatey"> Chocolatey</label>
-                        <label><input type="checkbox" name="flavor" value="herbal"> Herbal</label>
-                        <label><input type="checkbox" name="flavor" value="spicy"> Spicy</label>
-                        <label><input type="checkbox" name="flavor" value="citrusy"> Citrusy</label>
-                        <label><input type="checkbox" name="flavor" value="sweet"> Sweet</label>
-                        <label><input type="checkbox" name="flavor" value="creamy"> Creamy</label>
+                <!-- Step 3: Complexity and Strength -->
+                <div class="step" id="step3">
+                    <h2>Choose Complexity and Strength</h2>
+                    <div class="slider-container">
+                        <h3>Complexity</h3>
+                        <div class="complexity-slider">
+                            <input type="range" min="1" max="3" value="2" class="slider" id="complexitySlider">
+                            <div class="complexity-labels">
+                                <span>Simple</span>
+                                <span>Balanced</span>
+                                <span>Complex</span>
+                            </div>
+                        </div>
+
+                        <h3>Strength</h3>
+                        <div class="strength-slider">
+                            <input type="range" min="1" max="3" value="2" class="slider" id="strengthSlider">
+                            <div class="strength-labels">
+                                <span>Light</span>
+                                <span>Medium</span>
+                                <span>Strong</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="error-message" id="error-step3">Please select at least one option to continue.</div>
-                    <button id = "next-step4" type="button" onclick="goToStep(4)">Next</button>
-                </form>
+                </div>
+
+                <!-- Step 4: Liqueurs and Preferences -->
+                <div class="step" id="step4">
+                    <h2>Additional Options</h2>
+                    <div class="options-container">
+                        <section class="liqueurs-section">
+                            <h3>Select Liqueurs</h3>
+                            <div class="preferences-grid">
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="kahlua">
+                                    <span>Kahlua</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="baileys">
+                                    <span>Baileys</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="cointreau">
+                                    <span>Cointreau</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="amaretto">
+                                    <span>Amaretto</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="chambord">
+                                    <span>Chambord</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="liqueur" value="st_germain">
+                                    <span>St. Germain</span>
+                                </label>
+                            </div>
+                        </section>
+
+                        <section class="preferences-section">
+                            <h3>Preferences</h3>
+                            <div class="preferences-grid">
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="garnish">
+                                    <span>Include Garnish</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="classic">
+                                    <span>Classic Cocktails</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="modern">
+                                    <span>Modern Twists</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="layered">
+                                    <span>Layered Drinks</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="frozen">
+                                    <span>Frozen/Blended</span>
+                                </label>
+                                <label class="pref-card">
+                                    <input type="checkbox" name="preference" value="hot">
+                                    <span>Hot Drinks</span>
+                                </label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
 
-            <div id="step4" class="step">
-                <h2>Select Liqueurs You Have</h2>
-                <form id="liqueurForm">
-                    <div id="liqueur-options"></div>
-                    <div class="error-message" id="error-step4">Please select at least one option to continue.</div>
-                    <button id = "next-step5" type="button" onclick="goToStep(5)">Next</button>
-                </form>
+            <div class="navigation-buttons">
+                <button class="nav-btn back" id="backBtn" style="display: none;">Back</button>
+                <button class="nav-btn next" id="nextBtn">Next</button>
             </div>
-            <div id="step5" class="step">
-                <button id="recalculate-btn" type="button" onclick="goToStep(5)">Recalculate</button>
+
+            <div id="results-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div id="drink-recommendations"></div>
             </div>
-        </div>
-
-        <!-- Drink recommendations second -->
-        <div id="drink-recommendations"></div>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Justin Tam</p>
-    </footer>
-
+        </main>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
