@@ -1,388 +1,410 @@
 const BACKEND_URL = "https://cocktail-ai-819618430368.us-east1.run.app"
 // const BACKEND_URL = "http://localhost:8000"
 
-let userSelections = {
+let currentStep = 1;
+const totalSteps = 4;
+
+const userSelections = {
 	spirit: [],
-	strength: "",
-	flavor: [],
+	flavors: [],
+	complexity: 2,
+	strength: 2,
+	preferences: [],
 	liqueurs: []
 };
 
-function goToStep(stepNumber) {
-	console.log("Going to step " + stepNumber);
+// Add translation maps for complexity and strength
+const complexityMap = {
+	1: "Simple",
+	2: "Balanced",
+	3: "Complex"
+};
 
-	// Special handling for step 5 (loading state)
-	if (stepNumber === 5) {
-		if (!collectSelections(4)) { // Validate step 4 first
-			return false;
+const strengthMap = {
+	1: "Light",
+	2: "Medium",
+	3: "Strong"
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+	setupEventListeners();
+	updateNavigationButtons();
+});
+
+function setupEventListeners() {
+	// Spirit chip selection
+	document.querySelectorAll('.spirit-chip').forEach(chip => {
+		chip.addEventListener('click', () => {
+			const input = chip.querySelector('input');
+			input.checked = !input.checked;
+			if (input.checked) {
+				chip.classList.add('selected');
+			} else {
+				chip.classList.remove('selected');
+			}
+		});
+	});
+
+	// Flavor chip selection
+	document.querySelectorAll('.flavor-chip').forEach(chip => {
+		chip.addEventListener('click', () => {
+			const input = chip.querySelector('input');
+			input.checked = !input.checked;
+			if (input.checked) {
+				chip.classList.add('selected');
+			} else {
+				chip.classList.remove('selected');
+			}
+		});
+	});
+
+	// Complexity slider
+	const complexitySlider = document.getElementById('complexitySlider');
+	if (complexitySlider) {
+		complexitySlider.addEventListener('input', (e) => {
+			userSelections.complexity = parseInt(e.target.value);
+			updateSliderLabel('complexity', userSelections.complexity);
+		});
+	}
+
+	// Strength slider
+	const strengthSlider = document.getElementById('strengthSlider');
+	if (strengthSlider) {
+		strengthSlider.addEventListener('input', (e) => {
+			userSelections.strength = parseInt(e.target.value);
+			updateSliderLabel('strength', userSelections.strength);
+		});
+	}
+
+	// Liqueur selection
+	document.querySelectorAll('input[name="liqueur"]').forEach(input => {
+		input.addEventListener('change', () => {
+			const card = input.closest('.pref-card');
+			if (input.checked) {
+				card.classList.add('selected');
+				if (!userSelections.liqueurs.includes(input.value)) {
+					userSelections.liqueurs.push(input.value);
+				}
+			} else {
+				card.classList.remove('selected');
+				userSelections.liqueurs = userSelections.liqueurs.filter(l => l !== input.value);
+			}
+		});
+	});
+
+	// Preference selection
+	document.querySelectorAll('input[name="preference"]').forEach(input => {
+		input.addEventListener('change', () => {
+			const card = input.closest('.pref-card');
+			if (input.checked) {
+				card.classList.add('selected');
+				if (!userSelections.preferences.includes(input.value)) {
+					userSelections.preferences.push(input.value);
+				}
+			} else {
+				card.classList.remove('selected');
+				userSelections.preferences = userSelections.preferences.filter(p => p !== input.value);
+			}
+		});
+	});
+
+	// Navigation buttons
+	document.getElementById('nextBtn').addEventListener('click', () => {
+		updateSelections();
+		navigateSteps('next');
+	});
+	document.getElementById('backBtn').addEventListener('click', () => navigateSteps('back'));
+}
+
+function updateSliderLabel(type, value) {
+	const map = type === 'complexity' ? complexityMap : strengthMap;
+	const label = map[value];
+
+	// Optional: Update UI to show current selection
+	const labels = document.querySelector(`.${type}-labels`);
+	if (labels) {
+		labels.querySelectorAll('span').forEach((span, index) => {
+			span.style.fontWeight = index + 1 === value ? 'bold' : 'normal';
+			span.style.color = index + 1 === value ? 'var(--accent-color)' : 'inherit';
+		});
+	}
+}
+
+// New function to update selections when clicking next
+function updateSelections() {
+	// Update spirit selections
+	const selectedSpirits = Array.from(document.querySelectorAll('.spirit-chip input:checked')).map(input => input.value);
+	userSelections.spirit = selectedSpirits;
+
+	// Update flavor selections
+	const selectedFlavors = Array.from(document.querySelectorAll('.flavor-chip input:checked')).map(input => input.value);
+	userSelections.flavors = selectedFlavors;
+
+	// Update liqueur selections
+	const selectedLiqueurs = Array.from(document.querySelectorAll('input[name="liqueur"]:checked')).map(input => input.value);
+	userSelections.liqueurs = selectedLiqueurs;
+
+	// Update preference selections
+	const selectedPreferences = Array.from(document.querySelectorAll('input[name="preference"]:checked')).map(input => input.value);
+	userSelections.preferences = selectedPreferences;
+}
+
+function navigateSteps(direction) {
+	const previousStep = currentStep;
+
+	// Create sliding blind if it doesn't exist
+	let slidingBlind = document.querySelector('.sliding-blind');
+	if (!slidingBlind) {
+		slidingBlind = document.createElement('div');
+		slidingBlind.className = 'sliding-blind';
+		document.querySelector('.steps-container').appendChild(slidingBlind);
+	}
+
+	// Start transition
+	const steps = document.querySelectorAll('.step');
+	const currentStepElement = steps[previousStep - 1];
+	const nextStepElement = steps[direction === 'next' ? currentStep : currentStep - 2];
+
+	// Update current step
+	if (direction === 'next') {
+		if (currentStep === totalSteps) {
+			validateSelections();
+			// TODO: Update loading state
+			showLoadingState();
+			sendRecommendationRequest();
+			return;
+		} else {
+			currentStep++;
 		}
-		// Minimize step 4
-		minimizeStep(4);
-		// Show loading state and trigger recommendations
-		showLoadingState();
-		sendRecommendationRequest();
-
-		// Show recalculate button
-		const step5 = document.getElementById('step5');
-		if (step5) {
-			step5.style.display = "block";
-			step5.classList.remove('minimized');
-		}
-		return true;
-	}
-
-	// Regular step validation and progression
-	const currentStepNumber = stepNumber - 1;
-	if (currentStepNumber > 0) {
-		if (!collectSelections(currentStepNumber)) {
-			console.log("Cannot proceed: current step not valid");
-			return false;
+	} else {
+		if (currentStep !== 1) {
+			currentStep--;
 		}
 	}
 
-	// Only proceed if validation passed
-	const previousStep = document.getElementById(`step${stepNumber - 1}`);
-	if (previousStep) {
-		minimizeStep(stepNumber - 1);
-	}
+	// Animate transition
+	slidingBlind.style.height = '100%';
 
-	// Show current step
-	const currentStep = document.getElementById(`step${stepNumber}`);
-	if (currentStep) {
-		currentStep.style.display = "block";
-		currentStep.classList.remove('minimized');
-	}
+	setTimeout(() => {
+		currentStepElement.classList.remove('active');
+		currentStepElement.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
 
+		nextStepElement.style.display = 'block';
+		nextStepElement.classList.add('active');
+		nextStepElement.classList.add(direction === 'next' ? 'slide-in-right' : 'slide-in-left');
+
+		updateNavigationButtons();
+		updateProgressIndicators();
+
+		// Reset blind
+		setTimeout(() => {
+			slidingBlind.style.height = '0';
+			currentStepElement.classList.remove('slide-out-left', 'slide-out-right');
+			nextStepElement.classList.remove('slide-in-right', 'slide-in-left');
+		}, 500);
+	}, 250);
+}
+
+function updateNavigationButtons() {
+	const backBtn = document.getElementById('backBtn');
+	const nextBtn = document.getElementById('nextBtn');
+
+	backBtn.style.display = currentStep === 1 ? 'block' : 'block';
+	backBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+	nextBtn.textContent = currentStep === totalSteps ? 'Create Drinks' : 'Next';
+}
+
+function updateProgressIndicators() {
+	// Update step indicators
+	document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+		if (index + 1 < currentStep) {
+			indicator.classList.add('completed');
+		} else if (index + 1 === currentStep) {
+			indicator.classList.add('active');
+		} else {
+			indicator.classList.remove('active', 'completed');
+		}
+	});
+
+	// Update progress bar
+	const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+	document.querySelector('.progress-bar-fill').style.width = `${progress}%`;
+}
+
+function validateSelections() {
+	if (userSelections.spirit.length === 0) {
+		// showError('Please select at least one spirit');
+		// return false;
+		userSelections.spirit = ['any common spirit']
+	}
+	if (userSelections.flavors.length === 0) {
+		// showError('Please select at least one flavor profile');
+		// return false;
+		userSelections.flavors = ['any flavor profile']
+	}
+	if (userSelections.preferences.length === 0) {
+		userSelections.preferences = ['no preference']
+	}
+	if (userSelections.liqueurs.length === 0) {
+		userSelections.liqueurs = ['no liqueur']
+	}
 	return true;
 }
 
-function resetToStep1() {
-	console.log("Resetting...")
-	resetCheckmarks()
-	document.getElementById(`nonalcoholic`).style.display = "none";
-	document.getElementById(`step1`).style.display = "block";
-	document.getElementById(`next-step2`).style.display = "block";
+function showError(message) {
+	const errorDiv = document.createElement('div');
+	errorDiv.className = 'error-message';
+	errorDiv.textContent = message;
+
+	const currentStepElement = document.querySelector('.step.active');
+	currentStepElement.appendChild(errorDiv);
+
+	setTimeout(() => errorDiv.remove(), 3000);
 }
 
-function collectSelections(step) {
-	let shouldProgress = false;
-	const errorMessage = document.getElementById(`error-step${step}`);
-
-	if (step === 1) {
-		userSelections.spirit = Array.from(document.querySelectorAll("input[name='spirit']:checked")).map(el => el.value);
-		shouldProgress = userSelections.spirit.length > 0;
-
-		if (!shouldProgress && errorMessage) {
-			errorMessage.style.display = 'block';
-			return false;
-		}
-
-		if (shouldProgress && userSelections.spirit.includes("nonalcoholic")) {
-			document.getElementById(`nonalcoholic`).style.display = "flex";
-			document.getElementById(`step${1}`).style.display = "none";
-			document.getElementById(`step${2}`).style.display = "none";
-			return false;
-		}
-	}
-	else if (step === 2) {
-		userSelections.strength = document.querySelector("input[name='strength']:checked")?.value || "";
-		shouldProgress = userSelections.strength !== "";
-
-		if (!shouldProgress && errorMessage) {
-			errorMessage.style.display = 'block';
-			return false;
-		}
-	}
-	else if (step === 3) {
-		userSelections.flavor = Array.from(document.querySelectorAll("input[name='flavor']:checked")).map(el => el.value);
-		shouldProgress = userSelections.flavor.length > 0;
-
-		if (!shouldProgress && errorMessage) {
-			errorMessage.style.display = 'block';
-			return false;
-		}
-
-		if (shouldProgress) {
-			populateLiqueurs();
-		}
-	}
-	else if (step === 4) {
-		userSelections.liqueurs = Array.from(document.querySelectorAll("input[name='liqueur']:checked")).map(el => el.value);
-		shouldProgress = true; // Liqueurs are optional
-		sendRecommendationRequest();
-	}
-
-	// Hide error message if validation passed
-	if (errorMessage) {
-		errorMessage.style.display = 'none';
-	}
-
-	return shouldProgress;
-}
-
-function populateLiqueurs() {
-	const liqueurOptions = {
-		fruity: ["Peach Schnapps", "Triple Sec", "Midori"],
-		smoky: ["Mezcal", "Laphroaig"],
-		chocolatey: ["Crème de Cacao", "Godiva"],
-		herbal: ["Chartreuse", "Benedictine"],
-	};
-
-	const liqueurContainer = document.getElementById("liqueur-options");
-	liqueurContainer.innerHTML = "";
-	userSelections.flavor.forEach(flavor => {
-		if (liqueurOptions[flavor]) {
-			liqueurOptions[flavor].forEach(liqueur => {
-				const label = document.createElement("label");
-				label.innerHTML = `<input type="checkbox" name="liqueur" value="${liqueur}"> ${liqueur}`;
-				liqueurContainer.appendChild(label);
-			});
-		}
-	});
+function showLoadingState() {
+	document.querySelector('.steps-container').style.display = 'none';
+	document.querySelector('.navigation-buttons').style.display = 'none';
+	document.getElementById('results-container').style.display = 'block';
 }
 
 function sendRecommendationRequest() {
-	console.log("Sending recommendation request...")
+	console.log('Sending selections:', {
+		...userSelections,
+		complexity: complexityMap[userSelections.complexity],
+		strength: strengthMap[userSelections.strength]
+	});
+
 	fetch(`${BACKEND_URL}/recommend`, {
-		method: "POST",
+		method: 'POST',
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
 			spirits: userSelections.spirit,
-			flavors: userSelections.flavor,
-			strength: userSelections.strength,
+			flavors: userSelections.flavors,
+			complexity: complexityMap[userSelections.complexity],
+			strength: strengthMap[userSelections.strength],
 			liqueurs: userSelections.liqueurs,
-		}),
-	})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-			return response.json();
+			preferences: userSelections.preferences
 		})
-		.then((data) => {
+	})
+		.then(response => response.json())
+		.then(data => {
 			const drinks = parseDrinks(data.drinks);
 			showDrinkRecommendations(drinks);
 		})
-		.catch((error) => {
-			console.error("Error fetching recommendation:", error);
-			// Show user-friendly error message
-			const container = document.getElementById('drink-recommendations');
-			container.innerHTML = `
-			<div style="text-align: center; color: #ff4444;">
-				<p>Sorry, something went wrong. Please try again later.</p>
-			</div>
-		`;
+		.catch(error => {
+			console.error('Error:', error);
+			showError('Something went wrong. Please try again.');
 		});
 }
 
 function parseDrinks(responseText) {
-	console.log("Drinks received. Parsing...")
 	const sections = responseText.split('[drink_name]');
-	console.log(sections)
 	const drinks = [];
 
 	sections.forEach((section, index) => {
 		if (index === 0) return;
 
-		const drink = {};
-		drink.drink_name = section.split('\n')[0].trim();
-
-		const ingredientsStart = section.indexOf('[ingredients_and_measurements]') + '[ingredients_and_measurements]'.length;
-		const ingredientsEnd = section.indexOf('[instructions]');
-		drink.ingredients_and_measurements = section.substring(ingredientsStart, ingredientsEnd).trim();
-
-		const instructionsStart = section.indexOf('[instructions]') + '[instructions]'.length;
-		const instructionsEnd = section.indexOf('[strength]');
-		drink.instructions = section.substring(instructionsStart, instructionsEnd).trim();
-
-		const strengthStart = section.indexOf('[strength]') + '[strength]'.length;
-		const strengthEnd = section.indexOf('[drink_category]');
-		drink.strength = section.substring(strengthStart, strengthEnd).trim();
-
-		const categoryStart = section.indexOf('[drink_category]') + '[drink_category]'.length;
-		const categoryEnd = section.indexOf('[comments]');
-		drink.category = section.substring(categoryStart, categoryEnd).trim();
-
-		const commentsStart = section.indexOf('[comments]') + '[comments]'.length;
-		drink.comments = section.substring(commentsStart).trim();
+		const drink = {
+			name: section.split('\n')[0].trim(),
+			ingredients: section.substring(
+				section.indexOf('[ingredients_and_measurements]') + '[ingredients_and_measurements]'.length,
+				section.indexOf('[instructions]')
+			).trim(),
+			instructions: section.substring(
+				section.indexOf('[instructions]') + '[instructions]'.length,
+				section.indexOf('[strength]')
+			).trim(),
+			strength: section.substring(
+				section.indexOf('[strength]') + '[strength]'.length,
+				section.indexOf('[drink_category]')
+			).trim(),
+			category: section.substring(
+				section.indexOf('[drink_category]') + '[drink_category]'.length,
+				section.indexOf('[comments]')
+			).trim(),
+			comments: section.substring(
+				section.indexOf('[comments]') + '[comments]'.length
+			).trim()
+		};
 
 		drinks.push(drink);
 	});
-	console.log(drinks)
 
 	return drinks;
 }
 
 function showDrinkRecommendations(drinks) {
-	console.log("Showing drink recommendations.")
 	const container = document.getElementById('drink-recommendations');
 	container.innerHTML = '';
-	container.style.display = 'grid';
 
-	// Show the recalculate button after recommendations are loaded
-	const step5 = document.getElementById('step5');
-	if (step5) {
-		step5.style.display = "block";
-		step5.classList.remove('minimized');
-	}
+	drinks.forEach((drink, index) => {
+		const drinkCard = document.createElement('div');
+		drinkCard.className = 'drink-card';
+		drinkCard.style.animation = `fadeInUp ${0.3 + index * 0.1}s ease-out forwards`;
 
-	drinks.forEach((drink) => {
-		const drinkDiv = document.createElement('div');
-		drinkDiv.classList.add('drink-box');
+		drinkCard.innerHTML = `
+			<div class="drink-header">
+				<h3>${drink.name}</h3>
+				<span class="strength-badge">${drink.strength}</span>
+			</div>
+			<div class="drink-image">
+				<img src="assets/${drink.category.toLowerCase().replace(/[*\/\s]+-/g, '')}.jpg"
+					 alt="${drink.name}"
+					 onerror="this.src='assets/default-drink.jpg'">
+			</div>
+			<div class="drink-details">
+				<h4>Ingredients</h4>
+				<p>${drink.ingredients}</p>
+				<h4>Instructions</h4>
+				<p>${drink.instructions}</p>
+				<div class="drink-notes">
+					<p><em>${drink.comments}</em></p>
+				</div>
+			</div>
+		`;
 
-		const imageContainer = document.createElement('div');
-		imageContainer.classList.add('image-container');
-
-		const categoryName = drink.category.toLowerCase().replace(/[*\/\s]+-/g, '') + '.jpg';
-		const imagePath = `assets/${categoryName}`;
-		console.log('Loading image:', imagePath, 'for category:', drink.category);
-
-		const img = document.createElement('img');
-		img.src = imagePath;
-		img.alt = `${drink.drink_name} image`;
-		img.classList.add('drink-image');
-
-		// Add error handling for images
-		img.onerror = function () {
-			console.log('Image failed to load:', imagePath);
-			this.src = 'assets/default-drink.jpg'; // Fallback image
-			this.alt = 'Default drink image';
-		};
-
-		imageContainer.appendChild(img);
-		drinkDiv.appendChild(imageContainer);
-
-		const contentDiv = document.createElement('div');
-		contentDiv.classList.add('drink-content');
-
-		const name = document.createElement('h2');
-		name.classList.add('drink-name');
-		name.innerText = drink.drink_name;
-		contentDiv.appendChild(name);
-
-		// Add other drink details to contentDiv
-		['ingredients_and_measurements', 'instructions', 'strength', 'comments'].forEach(prop => {
-			const p = document.createElement('p');
-			p.innerHTML = `<strong>${prop.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${drink[prop]}`;
-			contentDiv.appendChild(p);
-		});
-
-		drinkDiv.appendChild(contentDiv);
-		container.appendChild(drinkDiv);
-	});
-}
-
-function resetCheckmarks() {
-	// Select all checkboxes in the form
-	const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-	// Uncheck each checkbox
-	checkboxes.forEach(checkbox => checkbox.checked = false);
-}
-
-function minimizeStep(stepNumber) {
-	const step = document.getElementById(`step${stepNumber}`);
-	if (!step) return;
-
-	step.classList.add('minimized');
-	step.style.display = "block";
-
-	// Add click handler to maximize
-	step.onclick = () => maximizeStep(stepNumber + 1);
-}
-
-function maximizeStep(stepNumber) {
-	// Don't allow maximizing if we're in loading/results state
-	if (stepNumber === 5) return;
-
-	// Minimize all steps
-	document.querySelectorAll('.step').forEach(step => {
-		step.classList.add('minimized');
-		step.onclick = () => maximizeStep(parseInt(step.id.replace('step', '')));
+		container.appendChild(drinkCard);
 	});
 
-	// Then maximize the clicked step
-	const step = document.getElementById(`step${stepNumber}`);
-	step.classList.remove('minimized');
-	step.onclick = null;
+	// Add a "Start Over" button
+	const startOverBtn = document.createElement('button');
+	startOverBtn.className = 'start-over-btn';
+	startOverBtn.textContent = 'Create Another Drink';
+	startOverBtn.onclick = resetApp;
+	container.appendChild(startOverBtn);
 }
 
-// Add event listeners to hide error messages when user makes a selection
-function addSelectionListeners() {
-	document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
-		input.addEventListener('change', () => {
-			const stepNumber = parseInt(input.closest('.step').id.replace('step', ''));
-			const errorMessage = document.getElementById(`error-step${stepNumber}`);
-			if (errorMessage) {
-				errorMessage.style.display = 'none';
-			}
-		});
-	});
-}
+function resetApp() {
+	currentStep = 1;
+	userSelections.spirit = [];
+	userSelections.flavors = [];
+	userSelections.complexity = 2;
+	userSelections.strength = 2;
+	userSelections.liqueurs = [];
 
-// Add this function to handle container clicks
-function setupStepContainerClicks() {
-	document.querySelectorAll('.step').forEach(step => {
-		step.addEventListener('click', (event) => {
-			// Don't handle clicks on inputs, labels, or buttons
-			if (event.target.tagName === 'INPUT' ||
-				event.target.tagName === 'LABEL' ||
-				event.target.tagName === 'BUTTON' ||
-				event.target.closest('label') ||
-				event.target.closest('button')) {
-				return;
-			}
+	// Reset UI
+	document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+	document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+	document.getElementById('complexitySlider').value = 2;
+	document.getElementById('strengthSlider').value = 2;
 
-			// Don't handle step 5 (results)
-			if (step.id === 'step5') {
-				return;
-			}
+	// Reset slider labels
+	updateSliderLabel('complexity', 2);
+	updateSliderLabel('strength', 2);
 
-			const stepNumber = parseInt(step.id.replace('step', ''));
+	// Show steps container
+	document.querySelector('.steps-container').style.display = 'block';
+	document.querySelector('.navigation-buttons').style.display = 'flex';
+	document.getElementById('results-container').style.display = 'none';
 
-			if (step.classList.contains('minimized')) {
-				// Maximize this step
-				step.classList.remove('minimized');
-				step.style.display = "block";
-			} else {
-				// Minimize this step
-				step.classList.add('minimized');
-				step.style.display = "block";
-			}
+	// Reset progress
+	updateProgressIndicators();
+	updateNavigationButtons();
 
-			// Keep step5 visible if recommendations are showing
-			const recommendationsContainer = document.getElementById('drink-recommendations');
-			if (recommendationsContainer.children.length > 0) {
-				const step5 = document.getElementById('step5');
-				if (step5) {
-					step5.style.display = "block";
-					step5.classList.remove('minimized');
-				}
-			}
-		});
-	});
-}
-
-// Call this when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-	addSelectionListeners();
-	setupStepContainerClicks();
-});
-
-function showLoadingState() {
-	const container = document.getElementById('drink-recommendations');
-	container.innerHTML = `
-        <div style="text-align: center;">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Mixing your perfect drinks...</div>
-        </div>
-    `;
-	container.style.display = 'block';
-
-	const spinner = container.querySelector('.loading-spinner');
-	if (spinner) {
-		spinner.style.display = 'block';
-	}
+	// Show first step
+	document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+	document.getElementById('step1').classList.add('active');
 }
